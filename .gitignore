@@ -1,0 +1,13 @@
+node_modules/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+dist/
+build/
+.angular/
+.DS_Store
+raw_text.txt
+test_*.js
+test_*.py
