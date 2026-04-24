@@ -1,0 +1,69 @@
+<div class="extractor-container glass-panel">
+  
+  <div class="header">
+    <h1 class="title">Contact Extractor</h1>
+    <p class="subtitle">Upload an image. We'll find the numbers and give you a CSV.</p>
+  </div>
+
+  <div class="upload-zone" 
+       [class.drag-over]="isDragging"
+       [class.has-file]="selectedFile !== null"
+       (dragover)="onDragOver($event)" 
+       (dragleave)="onDragLeave($event)" 
+       (drop)="onDrop($event)"
+       (click)="!selectedFile ? triggerFileInput() : null">
+    
+    <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+
+    <ng-container *ngIf="!selectedFile; else filePreview">
+      <div class="upload-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <h3>Drag & Drop an image here</h3>
+        <p>or click to browse</p>
+      </div>
+    </ng-container>
+
+    <ng-template #filePreview>
+      <div class="preview-container">
+        <img [src]="previewUrl" alt="Selected Document" class="image-preview" />
+        <button class="clear-btn" (click)="clearSelection(); $event.stopPropagation()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <div *ngIf="error" class="error-banner">
+    {{ error }}
+  </div>
+
+  <div class="actions">
+    <button class="button-primary extract-btn" 
+            [disabled]="!selectedFile || isLoading || extractedNumbers.length > 0"
+            (click)="extractContacts()">
+      <span *ngIf="!isLoading">Extract Contacts</span>
+      <span *ngIf="isLoading" class="loader"></span>
+      <span *ngIf="isLoading">Processing...</span>
+    </button>
+  </div>
+
+  <div class="results" *ngIf="extractedNumbers.length > 0">
+    <div class="results-header">
+      <h3>Found {{ extractedNumbers.length }} Contacts</h3>
+      <button class="button-primary download-btn" (click)="downloadCSV()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download CSV
+      </button>
+    </div>
+    <div class="numbers-grid">
+      <div class="number-card" *ngFor="let contact of extractedNumbers">
+        <div class="contact-number">{{ contact.number }}</div>
+        <div class="contact-meta">
+          <span class="badge type-badge">{{ contact.type }}</span>
+          <span class="badge country-badge">{{ contact.country }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
